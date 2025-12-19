@@ -89,6 +89,20 @@ usage: ib-traffic-monitor [-r|--refresh <second(s)>]
 [09/02/2025] 1.3.3 - fix variable shadowing
 ```
 
+## Use Case
+
+* Demos from [GNA-G Community](https://www.gna-g.net/) in SC25:
+
+[Demo](https://sc25.supercomputing.org/wp-content/uploads/2025/11/nre128s3.pdf)
+
+[Presentation](https://www.gna-g.net/wp-content/uploads/2025/12/rednesp_sc25_widescreen-v1.6.pdf)
+
+```
+The demonstration successfully featured the simultaneous transfer of data from multiple Brazilian universities to the exhibition hall at SC25.
+
+The ib-traffic-monitor tool was essential, enabling both the initial equipment setup and the continuous monitoring of the production links used throughout the demo.
+```
+
 ## Reference
 
 [Linux sysfs interface common for all infiniband devices](https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-class-infiniband)
