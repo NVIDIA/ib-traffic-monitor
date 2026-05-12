@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/select.h>
 #include <sys/types.h>
 #include <time.h>
@@ -29,7 +30,7 @@
 #include "ncurses_utils.h"
 #include "utils.h"
 
-#define VERSION "1.3.3"
+#define VERSION "1.4.0"
 
 /* define usage function */
 static void usage(void) {
@@ -37,6 +38,7 @@ static void usage(void) {
         "InfiniBand Traffic Monitor - Version %s\n"
         "usage: ib-traffic-monitor [-r|--refresh <second(s)>]\n"
         "                          [-e|--ethernet]\n"
+        "                          [-m|--memory-lock]\n"
         "                          [-h|--help]\n", VERSION
     );
 }
@@ -51,16 +53,18 @@ static void sigint_handler(int signo) {
 
 int main(int argc, char *argv[]) {
     /* define command-line options */
-    char *short_opts = "r:eh";
+    char *short_opts = "r:emh";
     struct option long_opts[] = {
         {"refresh", required_argument, NULL, 'r'},
         {"ethernet", no_argument, NULL, 'e'},
+        {"memory-lock", no_argument, NULL, 'm'},
         {"help", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0}
     };
 
     long int refresh_second = 5;
     int ethernet_flag = 0;
+    int memory_lock_flag = 0;
     int error_flag = 0;
     char error_msg[BUFSIZ];
     int exit_code = EXIT_SUCCESS;
@@ -97,6 +101,9 @@ int main(int argc, char *argv[]) {
             case 'e':
                 ethernet_flag = 1;
                 break;
+            case 'm':
+                memory_lock_flag = 1;
+                break;
             case 'h':
                 usage();
                 exit(EXIT_SUCCESS);
@@ -115,6 +122,14 @@ int main(int argc, char *argv[]) {
     if (is_linux() != 1) {
         fprintf(stderr, "ERROR: InfiniBand Traffic Monitor can be only running on Linux operating system\n");
         exit(EXIT_FAILURE);
+    }
+
+    /* lock memory pages if memory lock option is enabled */
+    if (memory_lock_flag > 0) {
+        if (mlockall(MCL_CURRENT | MCL_FUTURE) < 0) {
+            fprintf(stderr, "ERROR: failed to lock memory\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
     /* initialize metric structs */
@@ -338,6 +353,11 @@ int main(int argc, char *argv[]) {
     if (error_flag > 0) {
         fprintf(stderr, "%s\n", error_msg);
         exit_code = EXIT_FAILURE;
+    }
+
+    /* unlock memory */
+    if (memory_lock_flag > 0) {
+        munlockall();
     }
 
     exit(exit_code);

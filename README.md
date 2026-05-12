@@ -59,15 +59,18 @@ If `ib-traffic-monitor` cannot not detect any valid InfiniBand device, the progr
 
 ```
 $ ./ib-traffic-monitor -h
-InfiniBand Traffic Monitor - Version 1.3.3
+InfiniBand Traffic Monitor - Version 1.4.0
 usage: ib-traffic-monitor [-r|--refresh <second(s)>]
                           [-e|--ethernet]
+                          [-m|--memory-lock]
                           [-h|--help]
 ```
 
 `-r` or `--refresh`: specify the refresh period. the unit is second
 
 `-e` or `--ethernet`: show Ethernet link layer type devices. the default behavior is showing InfiniBand link layer devices only
+
+`-m` or `--memory-lock`: enable memory lock on application
 
 `-h` or `--help`: show help message
 
@@ -87,6 +90,8 @@ usage: ib-traffic-monitor [-r|--refresh <second(s)>]
 [05/24/2025] 1.3.2 - update version string
 
 [09/02/2025] 1.3.3 - fix variable shadowing
+
+[05/12/2026] 1.4.0 - add flag to enable memory lock
 ```
 
 ## Use Case
