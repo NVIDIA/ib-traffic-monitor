@@ -50,6 +50,11 @@ int get_infiniband_metrics(struct infiniband_metrics *input_infiniband_metrics, 
 
     /* sysfs_entry->d_name is interface name */
     while ((sysfs_entry = readdir(sysfs_dir_handle)) != NULL) {
+        /* stop processing if number of interfaces is greater than INTERFACE_COUNT */
+        if (count >= INTERFACE_COUNT) {
+            break;
+        }
+
         if (strcmp(sysfs_entry->d_name, ".") == 0 || strcmp(sysfs_entry->d_name, "..") == 0) {
             continue;
         }
@@ -71,6 +76,11 @@ int get_infiniband_metrics(struct infiniband_metrics *input_infiniband_metrics, 
 
         /* device_entry->d_name is port number */
         while ((device_entry = readdir(device_dir_handle)) != NULL) {
+            /* stop processing if number of interfaces is greater than INTERFACE_COUNT */
+            if (count >= INTERFACE_COUNT) {
+                break;
+            }
+
             if (strcmp(device_entry->d_name, ".") == 0 || strcmp(device_entry->d_name, "..") == 0) {
                 continue;
             }
@@ -339,11 +349,6 @@ int get_infiniband_metrics(struct infiniband_metrics *input_infiniband_metrics, 
             }
 
             ++count;
-
-            /* stop processing if number of interfaces is greater than INTERFACE_COUNT */
-            if (count >= INTERFACE_COUNT) {
-                break;
-            }
         }
 
         closedir(device_dir_handle);
